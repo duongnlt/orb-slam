@@ -10,6 +10,7 @@ Conventions:
 from __future__ import annotations
 
 import numpy as np
+import cv2
 
 from slam.camera import PinholeCamera
 
@@ -68,7 +69,15 @@ def estimate_essential(
     (inv(K) applied to the pixels). Start with cv2.findEssentialMat, then ask
     yourself what RANSAC is doing inside it.
     """
-    raise NotImplementedError("TODO: implement estimate_essential()")
+    # raise NotImplementedError("TODO: implement estimate_essential()")
+    camera_matrix = camera.K
+    try:
+        E, inlier_mask  = cv2.findEssentialMat(pixels1, pixels2, cameraMatrix=camera_matrix, method=cv2.RANSAC, threshold=threshold_px)
+    except:
+        return None, None
+    
+    return E, inlier_mask.ravel().astype(np.bool)
+    
 
 
 def recover_pose(
@@ -80,4 +89,48 @@ def recover_pose(
     puts the triangulated points in front of both cameras (z > 0). That check is the
     cheirality test.
     """
-    raise NotImplementedError("TODO: implement recover_pose()")
+    # raise NotImplementedError("TODO: implement recover_pose()")
+    U, S, Vt = np.linalg.svd(E)
+    
+    if np.linalg.det(U) < 0:
+        U[:, -1] *= -1
+    
+    if np.linalg.det(Vt) < 0:
+        Vt[-1, :] *= -1
+    
+    W = np.array([
+        [0, -1, 0],
+        [1, 0, 0],
+        [0, 0, 1]
+    ])
+    R1 = U @ W @ Vt
+    R2 = U @ W.T @ Vt
+    t = U[:, 2]
+    t = t / np.linalg.norm(t)
+    candidates = [(R1, t), (R1, -t), (R2, t), (R2, -t)]
+
+    best_candidate = 0
+    best_cnt = 0
+    for id, (R, t) in enumerate(candidates):
+        P1 = camera.K @ np.hstack((np.eye(3), np.zeros((3, 1))))
+        P2 = camera.K @ np.hstack((R, t.reshape(3,1)))
+        
+        X = triangulate_points(P1, P2, pixels1, pixels2)
+        
+        Z1 = X[:, 2]
+        X2 = X @ R.T + t.ravel()
+        Z2 = X2[:, 2]
+        
+        cnt = np.count_nonzero((Z1 > 0) & (Z2 > 0))
+        if cnt > best_cnt:
+            best_cnt = cnt
+            best_candidate = id
+    R, t = candidates[best_candidate]
+    T_cam2_cam1 = np.eye(4)
+    T_cam2_cam1[:3, :3] = R
+    T_cam2_cam1[:3, -1] = t
+    return T_cam2_cam1
+        
+        
+        
+    
