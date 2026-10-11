@@ -1,6 +1,6 @@
 # mini-orbslam
 
-A small ORB-SLAM-style monocular SLAM pipeline in Python, built step by step to learn how it works.
+A small ORB-SLAM-style monocular SLAM pipeline in Python built for learning
 
 ## Setup
 
@@ -11,7 +11,7 @@ pip install -e ".[dev]"
 pytest -q
 ```
 
-Datasets (TUM RGB-D, KITTI) go in `data/` (git-ignored).
+Datasets (TUM RGB-D, KITTI) in `data/`
 
 ## Layout
 
