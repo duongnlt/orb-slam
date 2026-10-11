@@ -44,8 +44,6 @@ class PinholeCamera:
         Returns:
             (N, 2) array of pixel coordinates (u, v). Points with z <= 0 (behind or on
             the camera plane) must come back as NaN, not as a wrong-looking pixel.
-
-        Hint: u = fx * x / z + cx, v = fy * y / z + cy. Do it vectorized, no Python loop.
         """
         x, y, z = points_cam[:, 0], points_cam[:, 1], points_cam[:, 2]
         valid_mask = z > 0
@@ -64,8 +62,6 @@ class PinholeCamera:
 
         Returns:
             (N, 3) array of points in the camera frame.
-
-        Hint: invert the projection equations, then scale by the depth.
         """
         u, v = pixels[:, 0], pixels[:, 1]
         x = (u - self.cx) / self.fx * depth

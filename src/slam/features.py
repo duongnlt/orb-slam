@@ -21,9 +21,6 @@ def detect_orb(image: np.ndarray, n_features: int = 1000) -> tuple[list[cv2.KeyP
     Returns:
         (keypoints, descriptors) where descriptors has shape (len(keypoints), 32), uint8.
         If nothing is found, return ([], empty (0, 32) uint8 array).
-
-    Hint: look at cv2.ORB_create. Think about what scaleFactor and nlevels do, because
-    ORB-SLAM relies on the image pyramid for scale invariance.
     """
     orb = cv2.ORB_create(nfeatures=n_features)
     kps = orb.detect(image)
@@ -45,9 +42,6 @@ def match_descriptors(
 
     Returns:
         List of cv2.DMatch with queryIdx indexing desc_a and trainIdx indexing desc_b.
-
-    Hint: cv2.BFMatcher with NORM_HAMMING and knnMatch(k=2). Why is the ratio test
-    needed? What happens to repetitive textures such as windows or tiles?
     """
     # raise NotImplementedError("TODO: implement match_descriptors()")
     if desc_a.shape[0] == 0 or desc_b.shape[0] == 0:

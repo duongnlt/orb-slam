@@ -26,10 +26,6 @@ def triangulate_points(
 
     Returns:
         (N, 3) points expressed in the frame that P1 and P2 are defined in.
-
-    Hint: each view gives two linear equations on the homogeneous point X, e.g.
-    u * P[2] - P[0] and v * P[2] - P[1] (rows of P). Stack four rows per point,
-    solve A X = 0 with an SVD, then dehomogenize.
     """
     u1, v1 = pixels1[:, 0], pixels1[:, 1]
     u2, v2 = pixels2[:, 0], pixels2[:, 1]
@@ -64,10 +60,6 @@ def estimate_essential(
 
     Returns:
         (E, inlier_mask) where E is 3x3 and inlier_mask is a (N,) bool array.
-
-    Hint: the epipolar constraint x2^T E x1 = 0 holds in normalized coordinates
-    (inv(K) applied to the pixels). Start with cv2.findEssentialMat, then ask
-    yourself what RANSAC is doing inside it.
     """
     # raise NotImplementedError("TODO: implement estimate_essential()")
     camera_matrix = camera.K
@@ -84,10 +76,6 @@ def recover_pose(
     E: np.ndarray, pixels1: np.ndarray, pixels2: np.ndarray, camera: PinholeCamera
 ) -> np.ndarray:
     """Decompose E into the relative pose T_cam2_cam1 (4x4, with ||t|| = 1).
-
-    Hint: E has four (R, t) candidates (two rotations times the sign of t). Only one
-    puts the triangulated points in front of both cameras (z > 0). That check is the
-    cheirality test.
     """
     # raise NotImplementedError("TODO: implement recover_pose()")
     U, S, Vt = np.linalg.svd(E)

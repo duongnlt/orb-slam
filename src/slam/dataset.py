@@ -38,9 +38,6 @@ def tum_fr1_camera() -> PinholeCamera:
 
 def quaternion_to_rotation(qx: float, qy: float, qz: float, qw: float) -> np.ndarray:
     """Convert a unit quaternion (x, y, z, w) to a 3x3 rotation matrix.
-
-    Hint: R = I + 2*qw*[v]x + 2*[v]x^2 with v = (qx, qy, qz), or expand the usual
-    formula. Normalize the input first; file values are rounded.
     """
     q = np.array([qx, qy, qz, qw])
     qx, qy, qz, qw = q / np.sqrt(qx**2 + qy**2 + qz**2 + qw**2)
@@ -93,9 +90,6 @@ def associate(
     Returns:
         List of (index_in_a, index_in_b) for pairs closer than max_diff seconds. An entry
         of A with no close partner is dropped. Each index in A appears at most once.
-
-    Hint: both arrays are sorted, so np.searchsorted gives the candidates without a loop
-    over every pair. Check the neighbour on both sides of the insertion point.
     """
     # raise NotImplementedError("TODO: implement associate()")
     i = np.searchsorted(timestamps_b, timestamps_a)
